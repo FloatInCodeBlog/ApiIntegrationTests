@@ -1,4 +1,5 @@
 ﻿using HostProject.Services.Weather;
+using HostProject.Tests.Factory;
 using HostProject.Tests.Mocks;
 using KellermanSoftware.CompareNetObjects;
 using Microsoft.AspNetCore.Hosting;
@@ -38,6 +39,29 @@ namespace HostProject.Tests
             mock.Setup(_ => _.Get()).Returns(WeatherServiceMock.FakeData);
 
             var _client = host.GetTestServer().CreateClient();
+
+            var result = await _client.GetStringAsync("WeatherForecast");
+
+            var expected = WeatherServiceMock.FakeData;
+            var actual = JsonConvert.DeserializeObject<IEnumerable<WeatherForecast>>(result);
+
+            var comparer = new CompareLogic();
+            var compareResult = comparer.Compare(expected, actual);
+            Assert.True(compareResult.AreEqual, compareResult.DifferencesString);
+        }
+
+        [Fact]
+        public async Task GetWeatherForecastMoqCustomBuilder()
+        {
+            var mock = new Mock<IWeatherService>();
+
+            var _client = await new HttpClientFactory()
+                .GetAsync(services =>
+                {
+                    services.Replace(ServiceDescriptor.Transient(_ => mock.Object));
+                });
+
+            mock.Setup(_ => _.Get()).Returns(WeatherServiceMock.FakeData);
 
             var result = await _client.GetStringAsync("WeatherForecast");
 

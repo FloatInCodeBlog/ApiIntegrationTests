@@ -17,7 +17,7 @@ namespace WebHostProject.Tests.Mocks
                 }
             };
 
-        public Task AddMultiple(IEnumerable<WeatherForecastCreate> weatherForecastCreates)
+        public Task AddRange(IEnumerable<WeatherForecastCreate> create)
         {
             throw new NotImplementedException();
         }

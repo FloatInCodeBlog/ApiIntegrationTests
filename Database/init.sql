@@ -1,0 +1,4 @@
+CREATE ROLE admin_user WITH LOGIN PASSWORD 'secretPassword123!';
+
+CREATE DATABASE weather;
+GRANT ALL PRIVILEGES ON DATABASE weather TO admin_user;

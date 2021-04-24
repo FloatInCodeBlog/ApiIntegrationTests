@@ -1,0 +1,1 @@
+flyway -url=jdbc:postgresql://<ip>:<port>/<database> -configFiles=%~dp0\migrations\flyway.conf -locations=filesystem:%~dp0\migrations\scripts migrate

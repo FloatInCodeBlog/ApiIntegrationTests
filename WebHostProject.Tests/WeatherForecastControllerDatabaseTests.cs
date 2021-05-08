@@ -14,10 +14,12 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using WebHostProject.Tests.Helpers;
 using Xunit;
 
 namespace WebHostProject.Tests
 {
+    [Collection(nameof(NotThreadSafeResourceCollection))]
     public class WeatherForecastControllerDatabaseTests
     {
         [Fact]

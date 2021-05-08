@@ -1,34 +1,32 @@
-﻿using Dapper;
-using Microsoft.Extensions.Options;
-using Npgsql;
+﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebHostProject.DataAccess;
+using WebHostProject.DataAccess.Weather;
 
 namespace WebHostProject.Services.Weather
 {
     public class WeatherService : IWeatherService
     {
-
         private static readonly string[] Summaries = new[]
         {
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
-        private readonly IOptions<DatabaseSettings> _options;
+        private readonly WeatherDataAccess _weatherDataAccess;
 
-        public WeatherService(IOptions<DatabaseSettings> options)
+        public WeatherService(WeatherDataAccess weatherDataAccess)
         {
-            _options = options;
+            _weatherDataAccess = weatherDataAccess;
         }
 
         public async Task AddRange(IEnumerable<WeatherForecastCreate> create)
         {
-            using var conn = new NpgsqlConnection(_options.Value.ConnectionString);
+            var daos = create.Select(p => new Prediction { Day = p.Date, Temperature = p.TemperatureC });
 
-            await conn.ExecuteAsync("INSERT INTO weather_predictions.predictions VALUES (@day, @temperature)",
-                create.Select(_ => new { day = _.Date, temperature = _.TemperatureC }).ToList()
-                );
+            _weatherDataAccess.Predictions.AddRange(daos);
+            await _weatherDataAccess.SaveChangesAsync();
         }
 
         public IEnumerable<WeatherForecast> Get()
@@ -45,14 +43,13 @@ namespace WebHostProject.Services.Weather
 
         public async Task<IEnumerable<WeatherForecast>> GetRange(DateTime from, DateTime to)
         {
-            using var conn = new NpgsqlConnection(_options.Value.ConnectionString);
+            var daos = await _weatherDataAccess.Predictions.Where(p => from <= p.Day && p.Day <= to).ToListAsync();
 
-            var results = await conn.QueryAsync<WeatherForecast>(@"select day as date, temperature as temperatureC 
-                FROM weather_predictions.predictions 
-                where @from <= day and day <= @to
-                order by day",
-                  new { from, to }
-                  );
+            var results = daos.Select(p => new WeatherForecast
+            {
+                Date = p.Day,
+                TemperatureC = (int)p.Temperature
+            });
 
             foreach (var result in results)
             {

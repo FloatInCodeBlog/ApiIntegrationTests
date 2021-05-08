@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Weather.Common.Settings;
+using WebHostProject.DataAccess;
 using WebHostProject.Services.Weather;
 
 namespace WebHostProject
@@ -24,6 +26,7 @@ namespace WebHostProject
             services.AddControllers();
 
             services.AddTransient<IWeatherService, WeatherService>();
+            services.AddTransient<WeatherDataAccess>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

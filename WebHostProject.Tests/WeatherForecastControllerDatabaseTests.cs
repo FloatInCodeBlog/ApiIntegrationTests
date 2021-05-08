@@ -14,6 +14,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Weather.Common.Settings;
 using WebHostProject.Tests.Helpers;
 using Xunit;
 

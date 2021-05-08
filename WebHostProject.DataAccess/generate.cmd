@@ -1,0 +1,1 @@
+dotnet ef dbcontext scaffold "Server=127.0.0.1;Port=6444;Database=weather;User Id=admin_user;Password=secretPassword123!;" Npgsql.EntityFrameworkCore.PostgreSQL --output-dir Weather --no-onconfiguring --force

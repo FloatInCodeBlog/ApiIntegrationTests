@@ -1,4 +1,4 @@
-﻿namespace WebHostProject
+﻿namespace Weather.Common.Settings
 {
     public class DatabaseSettings
     {
